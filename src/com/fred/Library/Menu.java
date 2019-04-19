@@ -1,15 +1,22 @@
 package com.fred.Library;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.fred.Dao.MemberDao;
 import com.fred.beans.Book;
+import com.fred.beans.Member;
 import com.fred.services.BookService;
+import com.fred.services.MemberService;
 
 public class Menu {
 	Scanner scanner = new Scanner(System.in);
+//	Library lib = new Library();
 	boolean exit;
 	BookService bs = new BookService();
+	MemberService ms = new MemberService();
+//	Member member;
 	
 	
 	public static void main(String []args) {
@@ -72,10 +79,6 @@ public class Menu {
 				System.out.println("Please Choose Again");	
 			}
 				
-//					finally {
-//						keyboard.close();
-//					}
-	
 		}while(userChoice < 0 || userChoice > 3);
 		 return userChoice;
 	
@@ -87,7 +90,6 @@ public class Menu {
 			case 0:
 				exit = true;
 				System.out.println("Thank you for visiting Rev Library");
-				System.out.println("GoodBye");
 				break;
 			case 1:
 				runSignUp();
@@ -97,67 +99,93 @@ public class Menu {
 				break;
 			case 3:
 				runAdminLogin();
+				break;
 			default:
 				printMenu();       // come back here to change possibly depending on selections
 		}
 	}
 	
 	private void runSignUp() {
-		String memberType, fname, lname, username, password, address, phone;
-		boolean valid = false;
-		while(!valid) {
-			
-			System.out.println("Please enter in Selection. Are you a Student/Faculty member?");
-			
-			memberType = scanner.nextLine();
-			if(memberType.equalsIgnoreCase("student") || memberType.equalsIgnoreCase("faculty")){
-				valid = true;
-				System.out.println("Please enter in first name: ");
-				fname = scanner.nextLine();
-				System.out.println("Please enter in Last name: ");
-				lname = scanner.nextLine();
-				System.out.println("Please enter in a username of your choosing: ");
-				username = scanner.nextLine();
-				System.out.println("Please enter in a password of your choosing: ");
-				password = scanner.nextLine();
-				System.out.println("Please enter in your address: ");
-				address = scanner.nextLine();
-				System.out.println("Please enter in your phone number: ");
-				phone = scanner.nextLine();
-				
-				Member account;
-				if(memberType.equalsIgnoreCase("Student")) {
-					account = new StudentMember(fname, lname, username, password, address, phone);
-				}
-				else{
-					account = new FacultyMember(fname, lname, username, password, address, phone);
-				}
-				Patron patron = new Patron(account);
-				System.out.println("Thank");
-				
-				
-			}
-			else {
-				System.out.println("Please Enter in Student or Faculty");
-			}
-			
-		}	
 		
-	}
+		String fname, lname, username, pass, email, address, phone;
+		System.out.println("Please enter in first name: ");
+		fname = scanner.nextLine();
+		System.out.println("Please enter in Last name: ");
+		lname = scanner.nextLine();
+		System.out.println("Please enter in a username of your choosing: ");
+		username = scanner.nextLine();
+		System.out.println("Please enter in a password of your choosing: ");
+		pass = scanner.nextLine();
+		System.out.println("Please enter in your email address");
+		email = scanner.nextLine();
+		System.out.println("Please enter in your address: ");
+		address = scanner.nextLine();
+		System.out.println("Please enter in your phone number: ");
+		phone = scanner.nextLine();
+		
+		
+		ms.addNewMember(new Member(fname, lname, username, pass, email, address, phone));
+		
+		
+		}
+//		String memberType, fname, lname, username, password, address, phone;
+//		boolean valid = false;
+//		while(!valid) {
+//			
+//			System.out.println("Please enter in Selection. Are you a Student/Faculty member?");
+			
+//				
+//				Member member;
+//				if(memberType.equalsIgnoreCase("Student")) {
+//					member = new StudentMember(fname, lname, username, password, address, phone);
+//				}
+//				else{
+//					member = new FacultyMember(fname, lname, username, password, address, phone);
+//				}
+//				Library.addMember(member);
+////				Patron patron = new Patron(account);
+//				
+//				System.out.println("Thank You");
+//				Library.addMember(account);
+//				
+//				
+//			}
+//			else {
+//				System.out.println("Please Enter in Student or Faculty");
+//			}
+//			
+//		}	
+//		
+	
 	
 	
 	private void runLogIn() {
-		String username, password;
+//		Member member;
+		String username, pass;
 		boolean valid = false;
 		while(!valid) {
 		System.out.println("Please Enter your Username");
 		username = scanner.nextLine();
 		System.out.println("Please Enter your password");
-		password = scanner.nextLine();
-		System.out.println("Log In Successful");
-		runMemberMenu();
-		performMemberAction(getUserInput());
+		pass = scanner.nextLine();
+		List<Member> memberas = ms.getAllMembers();{
+			for(Member m: memberas ) {
+				if(m.getUsername().equals(username) && m.getPass().equals(pass)) {
+					valid = true;
+					runMemberMenu();
+					int userChoice = getUserInput();
+					performMemberAction(userChoice);
+					return;
+				}
+			}
 		}
+
+
+		}
+		
+		
+	
+
 	}
 	
 	
@@ -172,7 +200,8 @@ public class Menu {
 			if((username.equals("Jesse") || username.equals("Rachel")) && (password.equals("Revature1"))){
 				valid = true;
 				runAdminMenu();
-				performAdminAction(getUserInput2());
+				int userInput2 = getUserInput2();
+				performAdminAction(userInput2);
 			}	
 				
 		}
@@ -183,7 +212,9 @@ public class Menu {
 	
 	private void runMemberMenu() {
 		System.out.println("What would you like to do?");
+		
 		System.out.println("\n1. View Books");
+		
 		System.out.println("\n0. Exit");
 	}
 	
@@ -194,10 +225,16 @@ public class Menu {
 		switch(UserChoice) {
 		case 0:
 			exit = true;
+			break;
 		case 1:
-			bs.getAllBooks();
-		default:
-			runMemberMenu();
+			List<Book> bookas = bs.getAllBooks();
+			for(Book b : bookas) {
+				System.out.println(b);
+			}
+			
+			break;
+//		default:
+//			runMemberMenu();
 		}
 		
 	}
@@ -238,28 +275,58 @@ public class Menu {
 	}
 
 	private void performAdminAction(int userChoice2) {
-		runAdminMenu();
 		switch(userChoice2) {
 		case 0:
 			exit = true;
 			System.out.println("Thank you for visiting Rev Library");
 			break;
+		
 		case 1:
-			bs.addNewBook(new Book());
+			Scanner kb = new Scanner(System.in);
+			System.out.println("Please enter Book ID");
+			String book_ID_temp = kb.nextLine();
+			int book_ID = Integer.parseInt(book_ID_temp);
+			System.out.println("Please enter Title");
+			String title = kb.nextLine();
+			System.out.println("Please enter Author");
+			String author = kb.nextLine();
+			bs.addNewBook(new Book(book_ID,title,author));
+			System.out.println();
+			runAdminMenu();
+			performAdminAction(getUserInput2());;
 			break;
+		
 		case 2:
-			bs.getBooksById(userChoice2);
+			Integer bookid = scanner.nextInt();
+			bs.getBooksById(bookid);
+			System.out.println();
+			runAdminMenu();
+			performAdminAction(getUserInput2());;
 			break;
+		
 		case 3:
-			bs.getAllBooks();
+			List<Book> bookas = bs.getAllBooks();
+			for(Book b : bookas) {
+				System.out.println(b);
+				}
+			System.out.println();
+			runAdminMenu();
+			performAdminAction(getUserInput2());;
 			break;
+			
 		case 4:
-			bs.deleteBookById(userChoice2);
+			System.out.println("Please Enter Book ID");
+			int book_ID1= scanner.nextInt();
+			bs.deleteBookById(book_ID1);
+			System.out.println();
+			runAdminMenu();
+			performAdminAction(getUserInput2());;
 			break;
+		
 		default:
 			performAdminAction(getUserInput2());;
 			
-		
+			
 
 		}
 	}

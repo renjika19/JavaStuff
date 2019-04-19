@@ -11,7 +11,7 @@ public class ConnectionUtil {
 	
 	public static Connection getConnection() {
 		try {
-			String[] creds= System.getenv("Library").split(";");
+			String[] creds= System.getenv("DBProps").split(";");
 			conn = DriverManager.getConnection(
 					creds[0],
 					creds[1],
